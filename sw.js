@@ -1,4 +1,4 @@
-const CACHE_NAME = 'rifa-kalley-v3.6.1';
+const CACHE_NAME = 'rifa-kalley-v3.6.2';
 const STATIC_ASSETS = [
   './',
   './index.html',
@@ -6,6 +6,7 @@ const STATIC_ASSETS = [
   './manifest.json',
   './css/style.css',
   './css/admin.css',
+  './js/encrypted-config.js',
   './js/app.js',
   './js/ticket-generator.js',
   './js/pwa-install.js',

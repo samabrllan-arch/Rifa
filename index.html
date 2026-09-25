@@ -35,6 +35,9 @@
       </a>
 
       <div class="header-actions">
+        <button id="btnUnlockHeader" class="btn-pwa-install" style="display: none; background: rgba(245, 158, 11, 0.15); border: 1.5px solid var(--gold-primary); color: var(--gold-light);" onclick="openMasterKeyModal()">
+          <span>🔑</span> <span>Sincronizar</span>
+        </button>
         <button id="btnInstallHeader" class="btn-pwa-install" onclick="triggerPwaInstall()">
           <span>📲</span> <span>Instalar App</span>
         </button>
@@ -354,12 +357,35 @@
     </div>
   </div>
 
+  <!-- MODAL DESBLOQUEO MAESTRO AES-256 -->
+  <div id="masterKeyModal" class="modal-overlay">
+    <div class="modal-box">
+      <button class="modal-close-btn" onclick="closeMasterKeyModal()">&times;</button>
+      <div class="modal-header">
+        <h3><span>🔒</span> Conexión Segura AES-256</h3>
+        <p>Ingresa tu clave maestra para sincronizar con Google Sheets en este dispositivo:</p>
+      </div>
+      <div style="margin: 1.25rem 0;">
+        <input type="password" id="inputMasterKey" placeholder="Ingresa tu clave maestra" style="width: 100%; box-sizing: border-box; padding: 0.85rem 1rem; border-radius: 8px; border: 1.5px solid var(--gold-primary); background: #0f172a; color: #fff; font-size: 1rem; outline: none; text-align: center;" onkeydown="if(event.key==='Enter') handleUnlockSubmit()">
+        <p id="masterKeyError" style="color: #ef4444; font-size: 0.82rem; margin-top: 0.5rem; display: none; text-align: center;">Clave incorrecta. Inténtalo de nuevo.</p>
+        <p style="font-size: 0.78rem; color: #94a3b8; margin-top: 0.75rem; text-align: center;">
+          ✨ <strong>Solo debes ingresarla una vez:</strong> el enlace se guardará para siempre en este navegador.
+        </p>
+      </div>
+      <div style="display: flex; gap: 0.75rem;">
+        <button class="btn-cancel-action" onclick="closeMasterKeyModal()" style="flex: 1;">Cancelar</button>
+        <button class="btn-submit-action" id="btnSubmitMasterKey" onclick="handleUnlockSubmit()" style="flex: 1.5;">Desbloquear y Guardar</button>
+      </div>
+    </div>
+  </div>
+
   <!-- TOAST DE NOTIFICACIONES -->
   <div id="appToast" class="toast"></div>
 
   <!-- SCRIPTS -->
+  <script src="./js/encrypted-config.js?v=3.6.1"></script>
   <script src="./js/ticket-generator.js?v=3.6.1"></script>
-  <script src="./js/pwa-install.js?v=3.6.0"></script>
-  <script src="./js/app.js?v=3.6.0"></script>
+  <script src="./js/pwa-install.js?v=3.6.1"></script>
+  <script src="./js/app.js?v=3.6.1"></script>
 </body>
 </html>

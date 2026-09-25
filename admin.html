@@ -56,10 +56,17 @@
       <p style="font-size: 0.85rem; color: #cbd5e1; margin-bottom: 0.85rem;">
         Si tienes tu link de Google Apps Script (creado con <code>backend/google-apps-script.gs</code>), pégalo aquí para guardar todo en tu Google Drive:
       </p>
-      <div style="display: flex; gap: 0.5rem; flex-wrap: wrap;">
+      <div style="display: flex; gap: 0.5rem; flex-wrap: wrap; margin-bottom: 0.75rem;">
         <input type="url" id="inputAppsScriptUrl" placeholder="https://script.google.com/macros/s/.../exec" style="flex: 1 1 300px; background: rgba(0,0,0,0.6); border: 1px solid rgba(255,255,255,0.2); color: #fff; padding: 0.6rem 1rem; border-radius: 8px; font-size: 0.88rem; outline: none;">
         <button onclick="saveAdminSettings()" style="background: var(--gold-gradient); color: #000; border: none; font-weight: 700; padding: 0.6rem 1.25rem; border-radius: 8px; cursor: pointer;">
           Guardar Link
+        </button>
+      </div>
+      <div id="boxAesUnlock" style="display: flex; align-items: center; gap: 0.5rem; flex-wrap: wrap; background: rgba(0,0,0,0.4); padding: 0.5rem 0.75rem; border-radius: 8px; border: 1px dashed rgba(245, 158, 11, 0.4);">
+        <span style="font-size: 0.82rem; color: #fde68a;">🔒 Desbloquear desde archivo encriptado AES-256:</span>
+        <input type="password" id="inputAdminMasterKey" placeholder="Clave maestra" style="width: 150px; background: #0b1120; border: 1px solid var(--gold-primary); color: #fff; padding: 0.35rem 0.65rem; border-radius: 6px; font-size: 0.82rem; outline: none;" onkeydown="if(event.key==='Enter') handleAdminAesUnlock()">
+        <button onclick="handleAdminAesUnlock()" style="background: rgba(245, 158, 11, 0.25); border: 1px solid var(--gold-primary); color: var(--gold-light); font-weight: 600; padding: 0.35rem 0.85rem; border-radius: 6px; font-size: 0.82rem; cursor: pointer;">
+          Desencriptar y Activar
         </button>
       </div>
     </div>
@@ -246,7 +253,8 @@
   <canvas id="confettiCanvas"></canvas>
 
   <!-- SCRIPTS -->
-  <script src="./js/ticket-generator.js?v=3.5.1"></script>
-  <script src="./js/admin.js?v=3.5.1"></script>
+  <script src="./js/encrypted-config.js?v=3.6.1"></script>
+  <script src="./js/ticket-generator.js?v=3.6.1"></script>
+  <script src="./js/admin.js?v=3.6.1"></script>
 </body>
 </html>

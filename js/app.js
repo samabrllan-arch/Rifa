@@ -33,84 +33,159 @@ document.addEventListener('DOMContentLoaded', async () => {
 });
 
 // ==========================================================================
-// CAPA DE DATOS HÍBRIDA (GOOGLE APPS SCRIPT -> NODE.JS API -> LOCALSTORAGE)
+// CAPA DE DATOS HÍBRIDA (LOCALSTORAGE INMEDIATO -> GOOGLE APPS SCRIPT -> OFFLINE)
 // ==========================================================================
 function getAppsScriptUrl() {
   return localStorage.getItem('rifa_appscript_url') || '';
 }
 
+function persistRaffleDataLocally() {
+  try {
+    localStorage.setItem('rifa_kalley_cache', JSON.stringify({
+      config: AppState.config,
+      tickets: AppState.tickets,
+      savedAt: new Date().toISOString()
+    }));
+  } catch (err) {
+    console.error('[App] Error guardando en caché local:', err);
+  }
+}
+
 async function loadRaffleData() {
-  // Purga proactiva si la caché del navegador tiene datos antiguos de 2 millones o precio anterior
-  const rawCache = localStorage.getItem('rifa_kalley_cache');
-  if (rawCache && (rawCache.includes('2.000.000') || rawCache.includes("2'000.000") || rawCache.includes('2000000') || rawCache.includes('25000'))) {
-    console.log('[App] Purgando caché obsoleta detectada en navegador');
-    localStorage.removeItem('rifa_kalley_cache');
+  // 1. CARGA INMEDIATA DESDE LOCALSTORAGE (0ms - Datos siempre disponibles al salir y volver)
+  const cached = localStorage.getItem('rifa_kalley_cache');
+  if (cached) {
+    try {
+      const data = JSON.parse(cached);
+      if (data.config) {
+        AppState.config = { ...AppState.config, ...data.config };
+        if (AppState.config.ticket_price === 25000) AppState.config.ticket_price = 15000;
+      }
+      if (Array.isArray(data.tickets) && data.tickets.length > 0) {
+        AppState.tickets = data.tickets;
+      }
+    } catch (e) {
+      console.error('[App] Error parseando caché local:', e);
+    }
   }
 
-  const appScriptUrl = getAppsScriptUrl();
+  // Inicializar 100 boletos si aún no existen
+  if (!AppState.tickets || AppState.tickets.length === 0) {
+    AppState.tickets = [];
+    for (let i = 0; i < 100; i++) {
+      const num = String(i).padStart(2, '0');
+      AppState.tickets.push({
+        id: `TICK-${num}`,
+        number: num,
+        status: 'disponible',
+        buyer: null
+      });
+    }
+    persistRaffleDataLocally();
+  }
 
-  // 1. Intentar con Google Apps Script si el usuario configuró el link
+  updateConfigUI();
+  updateUnlockUI();
+
+  // 2. SINCRONIZACIÓN EN SEGUNDO PLANO CON GOOGLE APPS SCRIPT (Si está desbloqueado)
+  const appScriptUrl = getAppsScriptUrl();
   if (appScriptUrl) {
     try {
       const res = await fetch(`${appScriptUrl}?action=getTickets`);
       if (res.ok) {
         const json = await res.json();
         if (json.success && json.data) {
-          AppState.config = json.data.config || AppState.config;
-          AppState.tickets = json.data.tickets || [];
-          localStorage.setItem('rifa_kalley_cache', JSON.stringify(json.data));
+          AppState.config = { ...AppState.config, ...(json.data.config || {}) };
+          AppState.tickets = json.data.tickets || AppState.tickets;
+          persistRaffleDataLocally();
           updateConfigUI();
+          renderGrid();
+          updateProgressUI();
           return;
         }
       }
     } catch (err) {
-      console.warn('[App] Error al conectar con Google Apps Script:', err);
+      console.warn('[App] Google Apps Script no respondió, manteniendo datos locales intactos:', err);
     }
   }
+}
 
-  // 2. Intentar con el servidor Node.js local
+function updateUnlockUI() {
+  const btn = document.getElementById('btnUnlockHeader');
+  if (!btn) return;
+  const isUnlocked = !!getAppsScriptUrl();
+  if (isUnlocked) {
+    btn.style.display = 'inline-flex';
+    btn.innerHTML = '<span>☁️</span> <span>Sincronizado</span>';
+    btn.style.borderColor = '#10b981';
+    btn.style.color = '#34d399';
+    btn.style.background = 'rgba(16, 185, 129, 0.15)';
+    btn.title = 'Conectado a Google Sheets y guardado en este navegador';
+    btn.onclick = () => showToast('☁️ Conexión activa con Google Sheets en este dispositivo.');
+  } else if (window.__ENCRYPTED_CONFIG__) {
+    btn.style.display = 'inline-flex';
+    btn.innerHTML = '<span>🔑</span> <span>Sincronizar</span>';
+    btn.style.borderColor = 'var(--gold-primary)';
+    btn.style.color = 'var(--gold-light)';
+    btn.style.background = 'rgba(245, 158, 11, 0.2)';
+    btn.onclick = openMasterKeyModal;
+  } else {
+    btn.style.display = 'none';
+  }
+}
+
+function openMasterKeyModal() {
+  const modal = document.getElementById('masterKeyModal');
+  const err = document.getElementById('masterKeyError');
+  const input = document.getElementById('inputMasterKey');
+  if (err) err.style.display = 'none';
+  if (input) input.value = '';
+  if (modal) modal.classList.add('active');
+  if (input) setTimeout(() => input.focus(), 200);
+}
+
+function closeMasterKeyModal() {
+  const modal = document.getElementById('masterKeyModal');
+  if (modal) modal.classList.remove('active');
+}
+
+async function handleUnlockSubmit() {
+  const input = document.getElementById('inputMasterKey');
+  const err = document.getElementById('masterKeyError');
+  const btn = document.getElementById('btnSubmitMasterKey');
+  const pass = (input?.value || '').trim();
+
+  if (!pass) {
+    if (err) { err.textContent = 'Por favor ingresa tu clave maestra.'; err.style.display = 'block'; }
+    return;
+  }
+
+  if (typeof window.decryptRaffleConfig !== 'function') {
+    if (err) { err.textContent = 'Módulo de desencriptación no disponible.'; err.style.display = 'block'; }
+    return;
+  }
+
+  if (btn) btn.textContent = 'Desencriptando...';
+
   try {
-    const res = await fetch('./api/tickets');
-    if (res.ok) {
-      const json = await res.json();
-      if (json.success && json.data) {
-        AppState.config = json.data.config || AppState.config;
-        AppState.tickets = json.data.tickets || [];
-        localStorage.setItem('rifa_kalley_cache', JSON.stringify(json.data));
-        updateConfigUI();
-        return;
-      }
+    const config = await window.decryptRaffleConfig(pass);
+    if (config && config.appscript_url) {
+      localStorage.setItem('rifa_appscript_url', config.appscript_url);
+      localStorage.setItem('rifa_unlocked', 'true');
+      closeMasterKeyModal();
+      updateUnlockUI();
+      showToast('🔓 ¡Enlace desbloqueado y guardado para siempre en este navegador!');
+      await loadRaffleData();
+      renderGrid();
+      updateProgressUI();
+    } else {
+      if (err) { err.textContent = 'Clave incorrecta. Inténtalo de nuevo.'; err.style.display = 'block'; }
     }
-  } catch (err) {
-    console.warn('[App] Backend Node.js offline, usando almacenamiento local:', err);
+  } catch (e) {
+    if (err) { err.textContent = 'Error al procesar la clave.'; err.style.display = 'block'; }
+  } finally {
+    if (btn) btn.textContent = 'Desbloquear y Guardar';
   }
-
-  // Fallback desde LocalStorage
-  const cached = localStorage.getItem('rifa_kalley_cache');
-  if (cached) {
-    try {
-      const data = JSON.parse(cached);
-      AppState.config = data.config || AppState.config;
-      AppState.tickets = data.tickets || [];
-      updateConfigUI();
-      return;
-    } catch (e) {
-      console.error('Error parseando caché local:', e);
-    }
-  }
-
-  // Si no hay datos, inicializar 100 números por defecto
-  AppState.tickets = [];
-  for (let i = 0; i < 100; i++) {
-    const num = String(i).padStart(2, '0');
-    AppState.tickets.push({
-      id: `TICK-${num}`,
-      number: num,
-      status: 'disponible',
-      buyer: null
-    });
-  }
-  updateConfigUI();
 }
 
 function updateConfigUI() {

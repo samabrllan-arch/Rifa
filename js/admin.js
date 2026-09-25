@@ -37,55 +37,67 @@ async function showAdminDashboard() {
 // CARGA DE DATOS (APPS SCRIPT -> NODE.JS API -> LOCALSTORAGE)
 // ==========================================================================
 async function loadAdminData() {
-  // Purga proactiva si la caché del navegador tiene datos antiguos de 2 millones o precio anterior
-  const rawCache = localStorage.getItem('rifa_kalley_cache');
-  if (rawCache && (rawCache.includes('2.000.000') || rawCache.includes("2'000.000") || rawCache.includes('2000000') || rawCache.includes('25000'))) {
-    console.log('[Admin] Purgando caché obsoleta detectada en navegador');
-    localStorage.removeItem('rifa_kalley_cache');
+  // 1. CARGA INMEDIATA DESDE LOCALSTORAGE (0ms de espera)
+  const cached = localStorage.getItem('rifa_kalley_cache');
+  if (cached) {
+    try {
+      const data = JSON.parse(cached);
+      if (data.config) {
+        AdminState.config = { ...AdminState.config, ...data.config };
+        if (AdminState.config.ticket_price === 25000) AdminState.config.ticket_price = 15000;
+      }
+      if (Array.isArray(data.tickets) && data.tickets.length > 0) {
+        AdminState.tickets = data.tickets;
+      }
+    } catch (e) {
+      console.error('[Admin] Error parseando caché local:', e);
+    }
   }
 
+  // 2. SINCRONIZACIÓN EN SEGUNDO PLANO CON GOOGLE APPS SCRIPT
   const appScriptUrl = getAppsScriptUrl();
-
-  // 1. Google Apps Script
   if (appScriptUrl) {
     try {
       const res = await fetch(`${appScriptUrl}?action=getTickets`);
       if (res.ok) {
         const json = await res.json();
         if (json.success && json.data) {
-          AdminState.tickets = json.data.tickets || [];
-          AdminState.config = json.data.config || {};
-          localStorage.setItem('rifa_kalley_cache', JSON.stringify(json.data));
+          AdminState.tickets = json.data.tickets || AdminState.tickets;
+          AdminState.config = { ...AdminState.config, ...(json.data.config || {}) };
+          saveAdminCache();
+          renderMetrics();
+          renderAdminTable();
           return;
         }
       }
     } catch (e) {
-      console.warn('Apps Script error en admin:', e);
+      console.warn('[Admin] Apps Script offline o sin respuesta, manteniendo datos locales:', e);
     }
   }
+}
 
-  // 2. Servidor Node.js
-  try {
-    const res = await fetch('./api/tickets');
-    if (res.ok) {
-      const json = await res.json();
-      if (json.success && json.data) {
-        AdminState.tickets = json.data.tickets || [];
-        AdminState.config = json.data.config || {};
-        localStorage.setItem('rifa_kalley_cache', JSON.stringify(json.data));
-        return;
-      }
-    }
-  } catch (e) {}
-
-  // 3. Fallback LocalStorage
-  const cached = localStorage.getItem('rifa_kalley_cache');
-  if (cached) {
-    try {
-      const data = JSON.parse(cached);
-      AdminState.tickets = data.tickets || [];
-      AdminState.config = data.config || {};
-    } catch (e) {}
+async function handleAdminAesUnlock() {
+  const input = document.getElementById('inputAdminMasterKey');
+  const pass = (input?.value || '').trim();
+  if (!pass) {
+    alert('Por favor ingresa tu clave maestra.');
+    return;
+  }
+  if (typeof window.decryptRaffleConfig !== 'function') {
+    alert('Módulo de desencriptación no disponible.');
+    return;
+  }
+  const config = await window.decryptRaffleConfig(pass);
+  if (config && config.appscript_url) {
+    setAppsScriptUrl(config.appscript_url);
+    const inputUrl = document.getElementById('inputAppsScriptUrl');
+    if (inputUrl) inputUrl.value = config.appscript_url;
+    alert('🔓 ¡Enlace de Google Apps Script desencriptado y guardado para siempre en este navegador!');
+    await loadAdminData();
+    renderMetrics();
+    renderAdminTable();
+  } else {
+    alert('❌ Clave incorrecta. Inténtalo de nuevo.');
   }
 }
 
