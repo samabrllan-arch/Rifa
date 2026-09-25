@@ -1,0 +1,496 @@
+/* ==========================================================================
+   PANEL DE ADMINISTRACIÓN Y SORTEO EN VIVO
+   ESTILOS DEDICADOS VIP MIDNIGHT & GOLD
+   ========================================================================== */
+
+.admin-body {
+  background-color: #070a12;
+  color: #f8fafc;
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  min-height: 100vh;
+}
+
+.admin-header {
+  background: rgba(13, 19, 34, 0.95);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+  padding: 0.85rem 1.25rem;
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  backdrop-filter: blur(16px);
+}
+
+.admin-header-wrap {
+  max-width: 1200px;
+  margin: 0 auto;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+}
+
+.admin-title-box {
+  display: flex;
+  align-items: center;
+  gap: 0.65rem;
+}
+
+.admin-title-box h1 {
+  font-family: 'Outfit', sans-serif;
+  font-size: 1.25rem;
+  font-weight: 800;
+  color: #fff;
+}
+
+.admin-badge {
+  background: var(--gold-gradient, linear-gradient(135deg, #f59e0b, #d97706));
+  color: #000;
+  font-size: 0.68rem;
+  font-weight: 900;
+  padding: 2px 7px;
+  border-radius: 6px;
+}
+
+.admin-nav-actions {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+}
+
+.btn-admin-action {
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  color: #fff;
+  padding: 0.5rem 0.95rem;
+  border-radius: 9999px;
+  font-size: 0.8rem;
+  font-weight: 700;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
+  text-decoration: none;
+  transition: all 0.2s ease;
+}
+
+.btn-admin-action:hover {
+  background: rgba(245, 158, 11, 0.2);
+  border-color: #f59e0b;
+  color: #fbbf24;
+}
+
+.btn-draw-live {
+  background: linear-gradient(135deg, #f59e0b, #d97706);
+  color: #000;
+  font-weight: 900;
+  border: none;
+  box-shadow: 0 4px 15px rgba(245, 158, 11, 0.35);
+}
+
+.btn-draw-live:hover {
+  background: #fbbf24;
+  color: #000;
+}
+
+/* ==========================================================================
+   METRICS GRID
+   ========================================================================== */
+.admin-content {
+  max-width: 1200px;
+  margin: 1.25rem auto 3rem;
+  padding: 0 1rem;
+}
+
+.metrics-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 0.75rem;
+  margin-bottom: 1.5rem;
+}
+
+.metric-card {
+  background: rgba(14, 21, 37, 0.75);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 14px;
+  padding: 1.15rem;
+  display: flex;
+  flex-direction: column;
+  position: relative;
+  overflow: hidden;
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.5);
+}
+
+.metric-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 4px;
+  height: 100%;
+  background: #f59e0b;
+}
+
+.metric-card.green::before { background: #10b981; }
+.metric-card.amber::before { background: #f59e0b; }
+.metric-card.indigo::before { background: #38bdf8; }
+.metric-card.emerald::before { background: #34d399; }
+
+.metric-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 0.4rem;
+}
+
+.metric-label {
+  font-size: 0.72rem;
+  color: #94a3b8;
+  font-weight: 700;
+  text-transform: uppercase;
+}
+
+.metric-icon { font-size: 1.15rem; }
+
+.metric-val {
+  font-family: 'Outfit', sans-serif;
+  font-size: 1.5rem;
+  font-weight: 900;
+  color: #fff;
+  line-height: 1.2;
+}
+
+.metric-sub {
+  font-size: 0.72rem;
+  color: #94a3b8;
+  margin-top: 0.25rem;
+}
+
+/* ==========================================================================
+   TABLA DE TICKETS
+   ========================================================================== */
+.admin-table-card {
+  background: rgba(14, 21, 37, 0.65);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 16px;
+  padding: 1.25rem;
+  margin-bottom: 1.5rem;
+}
+
+.table-controls {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+  margin-bottom: 1.15rem;
+}
+
+.table-search-box {
+  display: flex;
+  align-items: center;
+  background: rgba(7, 10, 18, 0.85);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 9999px;
+  padding: 0.4rem 0.9rem;
+  width: 100%;
+  max-width: 300px;
+}
+
+.table-search-box input {
+  background: transparent;
+  border: none;
+  color: #fff;
+  font-size: 0.85rem;
+  outline: none;
+  width: 100%;
+}
+
+.table-filter-pills {
+  display: flex;
+  gap: 0.35rem;
+  flex-wrap: wrap;
+}
+
+.filter-pill {
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  color: #94a3b8;
+  font-size: 0.75rem;
+  padding: 0.35rem 0.75rem;
+  border-radius: 9999px;
+  cursor: pointer;
+}
+
+.filter-pill.active {
+  background: #f59e0b;
+  color: #000;
+  font-weight: 800;
+}
+
+.table-responsive {
+  overflow-x: auto;
+}
+
+.admin-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.85rem;
+  text-align: left;
+}
+
+.admin-table th {
+  background: rgba(7, 10, 18, 0.9);
+  color: #f59e0b;
+  font-weight: 800;
+  padding: 0.85rem 1rem;
+  border-bottom: 1px solid rgba(245, 158, 11, 0.25);
+  white-space: nowrap;
+}
+
+.admin-table td {
+  padding: 0.85rem 1rem;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.04);
+  color: #e2e8f0;
+}
+
+.admin-table tr:hover {
+  background: rgba(255, 255, 255, 0.02);
+}
+
+.ticket-number-badge {
+  font-family: 'Outfit', sans-serif;
+  font-size: 1.1rem;
+  font-weight: 900;
+  background: rgba(245, 158, 11, 0.15);
+  color: #fbbf24;
+  padding: 2px 8px;
+  border-radius: 6px;
+  border: 1px solid rgba(245, 158, 11, 0.3);
+  display: inline-block;
+}
+
+.status-badge {
+  display: inline-block;
+  padding: 3px 8px;
+  border-radius: 9999px;
+  font-size: 0.68rem;
+  font-weight: 800;
+  text-transform: uppercase;
+}
+
+.status-badge.disponible { background: rgba(16, 185, 129, 0.18); color: #34d399; }
+.status-badge.apartado { background: rgba(245, 158, 11, 0.18); color: #fbbf24; }
+.status-badge.pagado { background: rgba(56, 189, 248, 0.2); color: #38bdf8; }
+
+.table-actions {
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
+}
+
+.btn-table-action {
+  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  color: #fff;
+  padding: 0.35rem 0.65rem;
+  border-radius: 6px;
+  font-size: 0.75rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.btn-table-action.confirm {
+  background: rgba(16, 185, 129, 0.2);
+  border-color: #10b981;
+  color: #34d399;
+}
+
+.btn-table-action.confirm:hover {
+  background: #10b981;
+  color: #000;
+}
+
+.btn-table-action.release {
+  background: rgba(239, 68, 68, 0.15);
+  border-color: #ef4444;
+  color: #f87171;
+}
+
+.btn-table-action.view-ticket {
+  background: rgba(245, 158, 11, 0.15);
+  border-color: #f59e0b;
+  color: #fbbf24;
+}
+
+/* ==========================================================================
+   SORTEO EN VIVO / RULETA MODAL
+   ========================================================================== */
+.roulette-box {
+  text-align: center;
+  padding: 1.25rem 0;
+}
+
+.roulette-display {
+  background: #070a12;
+  border: 2.5px solid #f59e0b;
+  border-radius: 16px;
+  padding: 1.75rem;
+  margin: 1.25rem 0;
+  box-shadow: 0 0 35px rgba(245, 158, 11, 0.4);
+  position: relative;
+  overflow: hidden;
+}
+
+.roulette-number {
+  font-family: 'Outfit', sans-serif;
+  font-size: clamp(3rem, 10vw, 5.2rem);
+  font-weight: 900;
+  color: #fbbf24;
+  letter-spacing: 0.05em;
+  text-shadow: 0 0 20px rgba(245, 158, 11, 0.6);
+  min-height: 85px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.roulette-buyer-name {
+  font-size: 1.15rem;
+  color: #fff;
+  font-weight: 800;
+  margin-top: 0.5rem;
+}
+
+.roulette-prize-info {
+  background: rgba(245, 158, 11, 0.1);
+  border: 1px solid rgba(245, 158, 11, 0.3);
+  padding: 0.75rem;
+  border-radius: 8px;
+  margin-top: 1rem;
+  font-size: 0.9rem;
+  color: #fbbf24;
+}
+
+#confettiCanvas {
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 500;
+}
+
+/* ==========================================================================
+   VISTA RESPONSIVA MÓVIL (TARJETAS TÁCTILES)
+   ========================================================================== */
+@media (max-width: 768px) {
+  .admin-header-wrap {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 0.65rem;
+  }
+
+  .admin-nav-actions {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 0.5rem;
+  }
+
+  .btn-draw-live {
+    grid-column: 1 / -1;
+    font-size: 0.95rem !important;
+    padding: 0.75rem !important;
+    justify-content: center;
+  }
+
+  .metrics-grid {
+    grid-template-columns: 1fr 1fr;
+    gap: 0.6rem;
+  }
+
+  .metric-card {
+    padding: 0.85rem;
+  }
+
+  .metric-val {
+    font-size: 1.25rem;
+  }
+
+  /* Tarjetas móviles en lugar de tabla */
+  .table-responsive {
+    overflow-x: visible;
+  }
+
+  .admin-table {
+    display: block;
+    width: 100%;
+  }
+
+  .admin-table thead {
+    display: none;
+  }
+
+  .admin-table tbody {
+    display: flex;
+    flex-direction: column;
+    gap: 0.85rem;
+  }
+
+  .admin-table tr {
+    display: block;
+    background: rgba(14, 21, 37, 0.9);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 12px;
+    padding: 1rem;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.4);
+  }
+
+  .admin-table td {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0.35rem 0;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.04);
+    font-size: 0.88rem;
+  }
+
+  .admin-table td::before {
+    content: attr(data-label);
+    font-weight: 700;
+    color: var(--gold-light, #fbbf24);
+    font-size: 0.75rem;
+    text-transform: uppercase;
+  }
+
+  .admin-table td:last-child {
+    border-bottom: none;
+    margin-top: 0.65rem;
+    padding-top: 0.65rem;
+    border-top: 1px dashed rgba(255, 255, 255, 0.1);
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .admin-table td:last-child::before {
+    display: none;
+  }
+
+  .table-actions {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 0.5rem;
+    width: 100%;
+  }
+
+  .btn-table-action {
+    min-height: 46px;
+    font-size: 0.85rem;
+    font-weight: 800;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 8px;
+    padding: 0.5rem;
+  }
+}

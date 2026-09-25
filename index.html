@@ -1,0 +1,365 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>Gran Rifa | Olla Multifuncional Kalley + $200.000 COP</title>
+  <meta name="description" content="Gran Rifa de la Olla Multifuncional Kalley más $200.000 COP en efectivo. Boleta: $15.000. Juega con la Lotería de Boyacá el 14 de Noviembre. Daviplata o Llave: 322 212 7468.">
+  <meta name="theme-color" content="#090d16">
+  
+  <!-- PWA & Mobile Meta Tags -->
+  <link rel="manifest" href="./manifest.json">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="Rifa Kalley">
+  <link rel="apple-touch-icon" href="./img/icon-192.png">
+  <link rel="icon" type="image/png" href="./img/favicon.png">
+
+  <!-- Estilos Globales Modernos -->
+  <link rel="stylesheet" href="./css/style.css?v=3.4.0">
+</head>
+<body>
+
+
+
+  <!-- HEADER OFICIAL VIP -->
+  <header class="site-header">
+    <div class="header-container">
+      <a href="./index.html" class="brand">
+        <img src="./img/icon-192.png" alt="Logo Rifa Kalley" class="brand-icon">
+        <div class="brand-text">
+          <h1>GRAN RIFA <span class="gold-badge">OFICIAL</span></h1>
+          <p>Olla Kalley + $200.000 COP</p>
+        </div>
+      </a>
+
+      <div class="header-actions">
+        <button id="btnInstallHeader" class="btn-pwa-install" onclick="triggerPwaInstall()">
+          <span>📲</span> <span>Instalar App</span>
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <main>
+    <!-- HERO SECTION: PREMIO ESTRELLA VIP COMPACTO -->
+    <section class="hero-section">
+      <div class="hero-card">
+        <div class="hero-glow-bg"></div>
+
+        <div class="hero-content">
+          <div class="hero-tag">
+            <span>🏆</span> <span>Sorteo Oficial Certificado</span>
+          </div>
+
+          <h2 class="hero-title">
+            ¡GANA LA OLLA MULTIFUNCIONAL KALLEY
+            <span class="text-gold">+ $200.000 EN EFECTIVO!</span>
+          </h2>
+
+          <div class="hero-meta-grid">
+            <div class="meta-box">
+              <span class="meta-label">Valor Boleta</span>
+              <p id="ticketPriceDisplay" class="meta-val">$15.000 COP</p>
+            </div>
+            <div class="meta-box">
+              <span class="meta-label">Números</span>
+              <p class="meta-val">100 (00 - 99)</p>
+            </div>
+            <div class="meta-box">
+              <span class="meta-label">Sorteo Oficial</span>
+              <p id="lotteryDateDisplay" class="meta-val" style="font-size: 0.85rem;">Lotería de Boyacá • 14 Nov</p>
+            </div>
+          </div>
+        </div>
+
+        <div class="hero-visual">
+          <div class="prize-image-wrapper">
+            <div class="prize-halo"></div>
+            <img src="./img/olla-kalley.png" alt="Olla Multifuncional Kalley" class="prize-pot-img">
+            <div class="cash-badge-overlay">
+              <span>💰</span> + $200.000 COP
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- BARRA DE CONTROL RÁPIDO & ÚNICO BOTÓN WHATSAPP STATUS -->
+    <section class="quick-control-section">
+      <div class="quick-control-card">
+        <div class="quick-stats-row">
+          <div class="stat-pill neutral">
+            <span>⚪ Libres:</span> <strong id="statLibres">100</strong>
+          </div>
+          <div class="stat-pill warning">
+            <span>🟠 Apartados:</span> <strong id="statApartados">0</strong>
+          </div>
+          <div class="stat-pill success">
+            <span>🟢 Pagados:</span> <strong id="statPagados">0</strong>
+          </div>
+          <div class="stat-pill gold">
+            <span>Meta:</span> <strong>$1.500.000</strong>
+          </div>
+        </div>
+
+        <div class="status-action-row">
+          <button class="btn-share-status-big" onclick="openStatusGridModal()">
+            <span>📲</span> <strong>DESCARGAR O COMPARTIR TABLA 10x10 PARA ESTADOS DE WHATSAPP</strong>
+          </button>
+        </div>
+      </div>
+    </section>
+
+    <!-- SECCIÓN DE NÚMEROS Y CATÁLOGO -->
+    <section id="numeros" class="catalog-section">
+      <div class="section-head">
+        <div class="section-title">
+          <h2><span>🎟️</span> Números de la Gran Rifa</h2>
+          <p>Toca cualquier número para apartarlo, confirmar pago, ver su boleto o enviarlo por WhatsApp.</p>
+        </div>
+
+        <div class="controls-row">
+          <div class="search-input-wrap">
+            <span class="search-icon">🔍</span>
+            <input type="text" id="searchInput" placeholder="Buscar número o comprador...">
+          </div>
+          <button class="btn-lucky" onclick="pickLuckyNumber()">
+            <span>🎲</span> <span>Número de la Suerte</span>
+          </button>
+        </div>
+      </div>
+
+      <!-- TABS DE FILTRADO -->
+      <div class="filter-tabs">
+        <button class="tab-btn active" data-filter="todos">
+          <span>Todos</span> <span id="countAll" class="tab-count">100</span>
+        </button>
+        <button class="tab-btn" data-filter="disponibles">
+          <span>⚪ Libres</span> <span id="countAvailable" class="tab-count">0</span>
+        </button>
+        <button class="tab-btn" data-filter="apartados">
+          <span>🟠 Apartados</span> <span id="countReserved" class="tab-count">0</span>
+        </button>
+        <button class="tab-btn" data-filter="pagados">
+          <span>🟢 Pagados</span> <span id="countSold" class="tab-count">0</span>
+        </button>
+        <button class="tab-btn" data-filter="mis-numeros">
+          <span>⭐ Mis Números</span> <span id="countMine" class="tab-count">0</span>
+        </button>
+      </div>
+
+      <!-- LEYENDA VISUAL CON LOS COLORES OFICIALES -->
+      <div class="legend-row">
+        <div class="legend-item">
+          <span class="legend-dot available"></span> <span>Libre (Sin color)</span>
+        </div>
+        <div class="legend-item">
+          <span class="legend-dot reserved"></span> <span>Apartado (Naranja)</span>
+        </div>
+        <div class="legend-item">
+          <span class="legend-dot sold"></span> <span>Pagado (Verde)</span>
+        </div>
+        <div class="legend-item">
+          <span class="legend-dot selected"></span> <span>Seleccionado</span>
+        </div>
+      </div>
+
+      <!-- GRILLA DINÁMICA DE NÚMEROS -->
+      <div id="numbersGrid" class="numbers-grid">
+        <!-- Renderizado dinámico vía app.js -->
+      </div>
+    </section>
+
+    <!-- SECCIÓN CÓMO PAGAR (ÚNICO MEDIO: DAVIPLATA / LLAVE AL 3222127468) -->
+    <section class="catalog-section" style="margin-top: -2rem;">
+      <div class="hero-prize-box" style="background: rgba(15, 23, 42, 0.9);">
+        <h3 style="font-family: var(--font-heading); font-size: 1.3rem; color: var(--gold-light); margin-bottom: 0.75rem;">
+          💳 Único Medio de Pago Autorizado
+        </h3>
+        <p style="font-size: 0.85rem; color: var(--text-secondary); margin-bottom: 1rem;">
+          Paga fácilmente por <strong>Daviplata</strong> o mediante <strong>Llave (Transfiya)</strong> al siguiente número oficial:
+        </p>
+
+        <div class="payment-accounts-box">
+          <div class="account-row">
+            <span class="account-name">📲 Daviplata o Llave (Transfiya):</span>
+            <div class="account-number-wrap">
+              <span id="daviNumberDisplay" class="account-number">322 212 7468</span>
+              <button class="btn-copy-num" data-number="3222127468">
+                <span>📋</span> <span>Copiar</span>
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <!-- BARRA FLOTANTE DE COMPRA (STICKY BOTTOM BAR) -->
+  <div id="stickyBuyBar" class="sticky-buy-bar">
+    <div class="buy-bar-container">
+      <div class="selection-info">
+        <div id="selectedListDisplay" class="selected-numbers-list"></div>
+        <div class="total-price-text">
+          <span id="selectedCountDisplay">0 seleccionados</span> • Total: <strong id="selectedTotalDisplay">$0 COP</strong>
+        </div>
+      </div>
+
+      <button class="btn-proceed-buy" onclick="openCheckoutModal()">
+        <span>Apartar / Comprar</span> <span>➔</span>
+      </button>
+    </div>
+  </div>
+
+  <!-- MODAL DE CHECKOUT / REGISTRO RÁPIDO -->
+  <div id="checkoutModal" class="modal-overlay">
+    <div class="modal-box">
+      <button class="modal-close-btn" onclick="closeCheckoutModal()">&times;</button>
+      
+      <div class="modal-header">
+        <h3><span>🎟️</span> Registrar Boleto</h3>
+        <p>Escribe el nombre y WhatsApp para generar el boleto oficial con foto y enviárselo.</p>
+      </div>
+
+      <div style="background: rgba(0,0,0,0.4); border: 1px solid var(--border-gold); padding: 0.75rem 1rem; border-radius: var(--radius-sm); margin-bottom: 1rem; font-size: 0.9rem;">
+        <div><strong>Números seleccionados:</strong> <span id="modalSelectedNumbers" style="color: var(--gold-light); font-weight: 800;">-</span></div>
+        <div style="margin-top: 4px;"><strong>Total a Pagar ($15.000 c/u):</strong> <span id="modalTotalPrice" style="color: #34d399; font-weight: 800; font-size: 1.15rem;">-</span></div>
+      </div>
+
+      <form id="checkoutForm" onsubmit="event.preventDefault(); submitReservation('apartado');">
+        <div class="form-group">
+          <label for="inputName">Nombre y Apellido del Comprador *</label>
+          <input type="text" id="inputName" placeholder="Escribe el nombre completo" autocomplete="off" required>
+        </div>
+
+        <div class="form-group">
+          <label for="inputPhone">WhatsApp del Comprador *</label>
+          <input type="tel" id="inputPhone" placeholder="Número de WhatsApp (ej. 310 123 4567)" autocomplete="off" required>
+        </div>
+
+        <input type="hidden" id="selectPaymentMethod" value="Daviplata / Llave (322 212 7468)">
+
+        <button type="submit" class="btn-submit-action btn-touch-lg" style="background: linear-gradient(135deg, #25d366, #128c7e); color: #fff; font-size: 1.05rem; padding: 1rem; margin-top: 1rem; display: flex; align-items: center; justify-content: center; gap: 0.6rem; box-shadow: 0 4px 15px rgba(37, 211, 102, 0.4);">
+          <span style="font-size: 1.3rem;">📲</span> <strong>APARTAR Y ENVIAR A WHATSAPP</strong>
+        </button>
+
+        <button type="button" class="btn-secondary-action btn-touch-lg" onclick="submitReservation('pagado')" style="background: rgba(245, 158, 11, 0.15); border: 1.5px solid var(--gold-primary); color: #fbbf24; font-size: 0.95rem; padding: 0.85rem; margin-top: 0.6rem; display: flex; align-items: center; justify-content: center; gap: 0.5rem;">
+          <span>✅</span> <strong>REGISTRAR COMO PAGADO Y ENVIAR</strong>
+        </button>
+      </form>
+    </div>
+  </div>
+
+  <!-- MODAL DE ACCIONES DIRECTAS POR NÚMERO (GESTIÓN INTELIGENTE) -->
+  <div id="numberActionModal" class="modal-overlay">
+    <div class="modal-box" style="max-width: 460px;">
+      <button class="modal-close-btn" onclick="closeNumberActionModal()" aria-label="Cerrar">&times;</button>
+      
+      <div class="modal-header" style="margin-bottom: 0.85rem;">
+        <div style="display: flex; align-items: center; gap: 0.85rem;">
+          <div id="actionModalNumber" style="font-family: var(--font-heading); font-size: 2.2rem; font-weight: 900; color: #fff; background: rgba(0,0,0,0.5); padding: 0.2rem 0.85rem; border-radius: 12px; border: 1.5px solid var(--gold-primary);">#00</div>
+          <div>
+            <h3 style="margin: 0; font-size: 1.25rem;">Gestionar Número</h3>
+            <span id="actionModalStatusBadge" style="display: inline-block; font-size: 0.65rem; font-weight: 800; padding: 2px 8px; border-radius: 4px; margin-top: 4px;">LIBRE</span>
+          </div>
+        </div>
+      </div>
+
+      <div id="actionModalContent">
+        <!-- Renderizado dinámicamente vía app.js -->
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL DE VISUALIZACIÓN Y COMPARTIR BOLETO INDIVIDUAL (CANVAS) -->
+  <div id="ticketModal" class="modal-overlay">
+    <div class="modal-box" style="max-width: 520px; max-height: 94vh; padding: 1rem 1.15rem; overflow: hidden; display: flex; flex-direction: column;">
+      <button class="modal-close-btn" onclick="closeTicketModal()">&times;</button>
+      
+      <div class="modal-header" style="margin-bottom: 0.35rem; flex-shrink: 0;">
+        <h3 style="font-size: 1.15rem;"><span>🎉</span> ¡Boleto Oficial Generado!</h3>
+        <p style="font-size: 0.78rem;">Con la foto real de la Olla Kalley, los $200.000 COP y su número.</p>
+      </div>
+
+      <div id="ticketCanvasContainer" class="ticket-preview-box" style="max-height: 44vh; overflow: hidden; flex: 1 1 auto; margin: 0.25rem 0;">
+        <!-- Canvas generado dinámicamente -->
+      </div>
+
+      <div class="ticket-actions-grid" style="flex-shrink: 0; margin-top: 0.5rem;">
+        <button class="btn-whatsapp-send" onclick="handleSendWhatsApp()">
+          <span>📲</span> <span>Enviar por WhatsApp</span>
+        </button>
+        <button class="btn-download-ticket" onclick="handleDownloadTicket()">
+          <span>📥</span> <span>Descargar Imagen</span>
+        </button>
+      </div>
+
+      <p style="text-align: center; font-size: 0.72rem; color: #94a3b8; margin-top: 0.5rem; flex-shrink: 0;">
+        Al tocar WhatsApp se abrirá el chat con el mensaje pre-redactado y la imagen de su boleto.
+      </p>
+    </div>
+  </div>
+
+  <!-- MODAL DE TABLA 10x10 PARA ESTADOS DE WHATSAPP -->
+  <div id="statusGridModal" class="modal-overlay">
+    <div class="modal-box" style="max-width: 540px; max-height: 94vh; padding: 1rem 1.15rem; overflow: hidden; display: flex; flex-direction: column;">
+      <button class="modal-close-btn" onclick="closeStatusGridModal()">&times;</button>
+      
+      <div class="modal-header" style="text-align: center; margin-bottom: 0.35rem; flex-shrink: 0;">
+        <h3 style="justify-content: center; font-size: 1.15rem;"><span>📲</span> Tabla 10x10 para Estados de WhatsApp</h3>
+        <p style="font-size: 0.78rem;">Muestra todos los números del 00 al 99 con los vendidos y libres.</p>
+      </div>
+
+      <div id="statusGridCanvasContainer" class="ticket-preview-box" style="max-height: 44vh; overflow: hidden; flex: 1 1 auto; margin: 0.25rem 0;">
+        <!-- Canvas de la cuadrícula 10x10 generado dinámicamente -->
+      </div>
+
+      <div class="ticket-actions-grid" style="flex-shrink: 0; margin-top: 0.5rem;">
+        <button class="btn-whatsapp-send" onclick="handleShareStatusGrid()">
+          <span>📲</span> <span>Compartir a WhatsApp</span>
+        </button>
+        <button class="btn-download-ticket" onclick="handleDownloadStatusGrid()">
+          <span>📥</span> <span>Descargar Imagen</span>
+        </button>
+      </div>
+
+      <p style="text-align: center; font-size: 0.75rem; color: #94a3b8; margin-top: 0.5rem; flex-shrink: 0;">
+        ¡Descárgala o compártela para subirla a tu Estado de WhatsApp y que la gente vea qué números quedan!
+      </p>
+    </div>
+  </div>
+
+  <!-- MODAL INSTRUCCIONES INSTALACIÓN IPHONE (SAFARI) -->
+  <div id="iosInstallModal" class="modal-overlay">
+    <div class="modal-box">
+      <button class="modal-close-btn" onclick="document.getElementById('iosInstallModal').classList.remove('active')">&times;</button>
+      
+      <div class="modal-header">
+        <h3><span>📲</span> Cómo Instalar en iPhone</h3>
+        <p>Sigue estos sencillos pasos desde Safari:</p>
+      </div>
+
+      <div style="font-size: 0.9rem; color: #cbd5e1; line-height: 1.7;">
+        <p><strong>1.</strong> Toca el botón <strong>Compartir</strong> <span style="font-size: 1.2rem;">⎋</span> en la barra inferior de Safari.</p>
+        <p><strong>2.</strong> Desliza hacia abajo y selecciona <strong>"Agregar a pantalla de inicio"</strong> <span style="font-size: 1.2rem;">➕</span>.</p>
+        <p><strong>3.</strong> Toca <strong>"Agregar"</strong> en la esquina superior derecha.</p>
+        <p style="color: #34d399; margin-top: 0.5rem; font-weight: 700;">¡Listo! Ya tienes la Rifa como una App nativa en tu celular.</p>
+      </div>
+
+      <button class="btn-submit-action" onclick="document.getElementById('iosInstallModal').classList.remove('active')">
+        Entendido
+      </button>
+    </div>
+  </div>
+
+  <!-- TOAST DE NOTIFICACIONES -->
+  <div id="appToast" class="toast"></div>
+
+  <!-- SCRIPTS -->
+  <script src="./js/ticket-generator.js?v=3.6.0"></script>
+  <script src="./js/pwa-install.js?v=3.6.0"></script>
+  <script src="./js/app.js?v=3.6.0"></script>
+</body>
+</html>

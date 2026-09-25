@@ -1,0 +1,46 @@
+{
+  "name": "Gran Rifa - Olla Kalley + $200.000 COP",
+  "short_name": "Rifa Kalley",
+  "description": "Gran Rifa oficial de la Olla Multifuncional Kalley más $200.000 COP en efectivo. Boleta: $15.000. Lotería de Boyacá el 14 de Noviembre.",
+  "start_url": "./index.html",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#090d16",
+  "theme_color": "#090d16",
+  "categories": ["entertainment", "finance", "lifestyle"],
+  "icons": [
+    {
+      "src": "./img/icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png"
+    },
+    {
+      "src": "./img/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    },
+    {
+      "src": "./img/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "maskable"
+    }
+  ],
+  "shortcuts": [
+    {
+      "name": "Ver Números Disponibles",
+      "short_name": "Números",
+      "description": "Explora los números de la rifa",
+      "url": "./index.html#numeros",
+      "icons": [{ "src": "./img/icon-192.png", "sizes": "192x192" }]
+    },
+    {
+      "name": "Panel de Administración",
+      "short_name": "Admin",
+      "description": "Gestionar rifa y sorteo",
+      "url": "./admin.html",
+      "icons": [{ "src": "./img/icon-192.png", "sizes": "192x192" }]
+    }
+  ]
+}

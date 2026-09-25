@@ -1,0 +1,252 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+  <title>Panel de Administración | Gran Rifa Kalley + $200.000 COP</title>
+  <meta name="theme-color" content="#090d16">
+  <link rel="icon" type="image/png" href="./img/favicon.png">
+  <link rel="stylesheet" href="./css/style.css">
+  <link rel="stylesheet" href="./css/admin.css">
+</head>
+<body class="admin-body">
+
+  <!-- HEADER ADMINISTRATIVO -->
+  <header class="admin-header">
+    <div class="admin-header-wrap">
+      <div class="admin-title-box">
+        <a href="./index.html" style="text-decoration: none; color: #fff; font-size: 1.2rem;">⬅️</a>
+        <h1>PANEL DE CONTROL</h1>
+        <span class="admin-badge">ADMINISTRADOR</span>
+      </div>
+
+      <div class="admin-nav-actions">
+        <!-- Compartir Tabla Estados -->
+        <button class="btn-admin-action" style="background: linear-gradient(135deg, #25d366, #128c7e); border: none; font-weight: 800;" onclick="openAdminStatusGridModal()">
+          <span>📲</span> <span>Tabla 10x10 Estados</span>
+        </button>
+        <button class="btn-admin-action btn-draw-live" onclick="openLiveDrawModal()">
+          <span>🎰</span> <span>Sorteo en Vivo (Ruleta)</span>
+        </button>
+        <button class="btn-admin-action" onclick="exportTicketsToExcel()">
+          <span>📊</span> <span>Exportar Excel</span>
+        </button>
+        <button class="btn-admin-action" onclick="showAdminDashboard()">
+          <span>🔄</span> <span>Recargar</span>
+        </button>
+        <a href="./index.html" class="btn-admin-action">
+          <span>🌐</span> <span>Ver Web Rifa</span>
+        </a>
+      </div>
+    </div>
+  </header>
+
+  <main class="admin-content">
+
+    <!-- SECCIÓN DE ENLACE DE GOOGLE APPS SCRIPT -->
+    <div style="background: rgba(15, 23, 42, 0.7); border: 1.5px solid var(--gold-primary); border-radius: 14px; padding: 1.25rem; margin-bottom: 1.75rem;">
+      <div style="display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 0.5rem; margin-bottom: 0.75rem;">
+        <h3 style="font-family: var(--font-heading); color: var(--gold-light); font-size: 1.15rem; display: flex; align-items: center; gap: 0.5rem;">
+          <span>⚡</span> Conexión con Google Apps Script (Google Sheets)
+        </h3>
+        <span style="font-size: 0.75rem; background: rgba(245, 158, 11, 0.2); color: #fde68a; padding: 2px 8px; border-radius: 4px;">
+          100% Gratuito y Serverless
+        </span>
+      </div>
+      <p style="font-size: 0.85rem; color: #cbd5e1; margin-bottom: 0.85rem;">
+        Si tienes tu link de Google Apps Script (creado con <code>backend/google-apps-script.gs</code>), pégalo aquí para guardar todo en tu Google Drive:
+      </p>
+      <div style="display: flex; gap: 0.5rem; flex-wrap: wrap;">
+        <input type="url" id="inputAppsScriptUrl" placeholder="https://script.google.com/macros/s/.../exec" style="flex: 1 1 300px; background: rgba(0,0,0,0.6); border: 1px solid rgba(255,255,255,0.2); color: #fff; padding: 0.6rem 1rem; border-radius: 8px; font-size: 0.88rem; outline: none;">
+        <button onclick="saveAdminSettings()" style="background: var(--gold-gradient); color: #000; border: none; font-weight: 700; padding: 0.6rem 1.25rem; border-radius: 8px; cursor: pointer;">
+          Guardar Link
+        </button>
+      </div>
+    </div>
+
+    <!-- TARJETAS DE MÉTRICAS -->
+    <div class="metrics-grid">
+      <div class="metric-card emerald">
+        <div class="metric-header">
+          <span class="metric-label">Total Recaudado</span>
+          <span class="metric-icon">💰</span>
+        </div>
+        <div id="metricRecaudado" class="metric-val">$0 COP</div>
+        <div class="metric-sub">Pagos confirmados</div>
+      </div>
+
+      <div class="metric-card amber">
+        <div class="metric-header">
+          <span class="metric-label">Por Cobrar</span>
+          <span class="metric-icon">⏳</span>
+        </div>
+        <div id="metricPorCobrar" class="metric-val">$0 COP</div>
+        <div class="metric-sub">Números apartados</div>
+      </div>
+
+      <div class="metric-card indigo">
+        <div class="metric-header">
+          <span class="metric-label">Boletos Vendidos</span>
+          <span class="metric-icon">🎟️</span>
+        </div>
+        <div id="metricPagados" class="metric-val">0 boletos</div>
+        <div class="metric-sub">Listos para el sorteo</div>
+      </div>
+
+      <div class="metric-card green">
+        <div class="metric-header">
+          <span class="metric-label">Disponibles</span>
+          <span class="metric-icon">🟢</span>
+        </div>
+        <div id="metricDisponibles" class="metric-val">100 boletos</div>
+        <div class="metric-sub">Libres para venta</div>
+      </div>
+
+      <div class="metric-card amber">
+        <div class="metric-header">
+          <span class="metric-label">Meta Total</span>
+          <span class="metric-icon">🎯</span>
+        </div>
+        <div id="metricMeta" class="metric-val">$1.500.000 COP</div>
+        <div class="metric-sub">100 boletos a $15.000</div>
+      </div>
+    </div>
+
+    <!-- TABLA / TARJETAS MÓVILES DE GESTIÓN DE BOLETOS -->
+    <div class="admin-table-card">
+      <div class="table-controls">
+        <div class="table-search-box">
+          <span style="margin-right: 0.5rem; color: #94a3b8;">🔍</span>
+          <input type="text" id="adminSearchInput" placeholder="Buscar por número o comprador...">
+        </div>
+
+        <div class="table-filter-pills">
+          <button class="filter-pill active" data-filter="todos">Todos</button>
+          <button class="filter-pill" data-filter="apartados">Apartados</button>
+          <button class="filter-pill" data-filter="pagados">Pagados</button>
+          <button class="filter-pill" data-filter="disponibles">Disponibles</button>
+        </div>
+      </div>
+
+      <div class="table-responsive">
+        <table class="admin-table">
+          <thead>
+            <tr>
+              <th>Número</th>
+              <th>Estado</th>
+              <th>Comprador</th>
+              <th>Teléfono</th>
+              <th>Medio Pago</th>
+              <th>Folio</th>
+              <th>Acciones</th>
+            </tr>
+          </thead>
+          <tbody id="adminTableBody">
+            <!-- Filas dinámicas generadas vía admin.js -->
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- RESUMEN DE PARÁMETROS -->
+    <div class="admin-table-card" style="opacity: 0.95;">
+      <h3 style="font-family: var(--font-heading); color: var(--gold-light); font-size: 1.15rem; margin-bottom: 0.75rem;">
+        📋 Datos Oficiales de la Rifa
+      </h3>
+      <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 0.75rem; font-size: 0.88rem;">
+        <div style="background: rgba(0,0,0,0.3); padding: 0.75rem; border-radius: 8px;">
+          <span style="color: #94a3b8; display: block; font-size: 0.75rem;">PREMIOS:</span>
+          <strong>Olla Multifuncional Kalley + $200.000 COP</strong>
+        </div>
+        <div style="background: rgba(0,0,0,0.3); padding: 0.75rem; border-radius: 8px;">
+          <span style="color: #94a3b8; display: block; font-size: 0.75rem;">VALOR BOLETA:</span>
+          <strong style="color: #34d399;">$15.000 COP</strong>
+        </div>
+        <div style="background: rgba(0,0,0,0.3); padding: 0.75rem; border-radius: 8px;">
+          <span style="color: #94a3b8; display: block; font-size: 0.75rem;">SORTEO:</span>
+          <strong>Lotería de Boyacá (14 de Noviembre)</strong>
+        </div>
+        <div style="background: rgba(0,0,0,0.3); padding: 0.75rem; border-radius: 8px;">
+          <span style="color: #94a3b8; display: block; font-size: 0.75rem;">PAGO AUTORIZADO:</span>
+          <strong style="color: #38bdf8;">Daviplata / Llave (322 212 7468)</strong>
+        </div>
+      </div>
+    </div>
+
+  </main>
+
+  <!-- MODAL DE SORTEO EN VIVO / RULETA -->
+  <div id="liveDrawModal" class="modal-overlay">
+    <div class="modal-box" style="max-width: 580px;">
+      <button class="modal-close-btn" onclick="closeLiveDrawModal()">&times;</button>
+      
+      <div class="modal-header" style="text-align: center;">
+        <h3 style="justify-content: center;">🎰 SORTEO EN VIVO: OLLA KALLEY + $200.000 COP</h3>
+        <p id="drawPaidCount">Cargando boletos pagados...</p>
+      </div>
+
+      <div class="roulette-box">
+        <div class="roulette-display">
+          <div id="rouletteNumber" class="roulette-number">??</div>
+          <div id="rouletteBuyerName" class="roulette-buyer-name">Esperando inicio...</div>
+        </div>
+
+        <div class="roulette-prize-info">
+          🎁 <strong>Premio Oficial:</strong> Olla Multifuncional Kalley + $200.000 COP en Efectivo
+        </div>
+
+        <button id="btnStartDraw" class="btn-proceed-buy" style="margin: 1.5rem auto 0; font-size: 1.1rem; padding: 0.85rem 2rem;" onclick="startDrawRoulette()">
+          <span>🎲</span> ¡GIRAR RULETA DEL GANADOR!
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL DE PREVIEW BOLETO INDIVIDUAL (CANVAS) -->
+  <div id="ticketModal" class="modal-overlay">
+    <div class="modal-box" style="max-width: 620px;">
+      <button class="modal-close-btn" onclick="document.getElementById('ticketModal').classList.remove('active')">&times;</button>
+      <div class="modal-header">
+        <h3><span>🎟️</span> Boleto Oficial Generado</h3>
+        <p>Con foto de la Olla Kalley y los $200.000 COP en efectivo.</p>
+      </div>
+      <div id="ticketCanvasContainer" class="ticket-preview-box"></div>
+      <div class="ticket-actions-grid">
+        <button class="btn-whatsapp-send" onclick="window.ticketGenerator.shareWhatsApp(window.AdminCurrentTicket)">
+          <span>📲</span> <span>Enviar a WhatsApp</span>
+        </button>
+        <button class="btn-download-ticket" onclick="window.ticketGenerator.downloadTicket(window.AdminCurrentTicket)">
+          <span>📥</span> <span>Descargar Imagen</span>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL DE TABLA 10x10 PARA ESTADOS EN ADMIN -->
+  <div id="adminStatusGridModal" class="modal-overlay">
+    <div class="modal-box" style="max-width: 620px;">
+      <button class="modal-close-btn" onclick="document.getElementById('adminStatusGridModal').classList.remove('active')">&times;</button>
+      <div class="modal-header" style="text-align: center;">
+        <h3 style="justify-content: center;"><span>📲</span> Tabla 10x10 para Estados de WhatsApp</h3>
+        <p>Cuadrícula oficial con números libres y ocupados lista para compartir.</p>
+      </div>
+      <div id="adminStatusGridCanvasContainer" class="ticket-preview-box"></div>
+      <div class="ticket-actions-grid">
+        <button class="btn-whatsapp-send" onclick="adminShareStatusGrid()">
+          <span>📲</span> <span>Compartir a WhatsApp</span>
+        </button>
+        <button class="btn-download-ticket" onclick="adminDownloadStatusGrid()">
+          <span>📥</span> <span>Descargar Imagen</span>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- CANVAS DE CONFETI FULLSCREEN -->
+  <canvas id="confettiCanvas"></canvas>
+
+  <!-- SCRIPTS -->
+  <script src="./js/ticket-generator.js?v=3.5.1"></script>
+  <script src="./js/admin.js?v=3.5.1"></script>
+</body>
+</html>
