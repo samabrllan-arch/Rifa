@@ -651,71 +651,49 @@ class TicketGenerator {
 
   async triggerFileDownload(canvas, fileName) {
     try {
-      const dataUrl = canvas.toDataURL('image/png', 0.98);
-
-      // 1. Método Principal (100% infalible en Microsoft Edge y Chromium):
-      // POST a /api/download-image con iframe invisible para forzar
-      // Content-Disposition: attachment; filename="nombre.png"
-      let iframe = document.getElementById('rifa_download_iframe');
-      if (!iframe) {
-        iframe = document.createElement('iframe');
-        iframe.id = 'rifa_download_iframe';
-        iframe.name = 'rifa_download_iframe';
-        iframe.style.position = 'fixed';
-        iframe.style.top = '-9999px';
-        iframe.style.left = '-9999px';
-        iframe.style.width = '1px';
-        iframe.style.height = '1px';
-        iframe.style.opacity = '0';
-        iframe.style.pointerEvents = 'none';
-        document.body.appendChild(iframe);
+      // 1. Descarga nativa directa mediante Blob (estándar HTML5 para móviles y PC)
+      if (canvas.toBlob) {
+        canvas.toBlob((blob) => {
+          if (!blob) {
+            this.fallbackDownloadDataUrl(canvas, fileName);
+            return;
+          }
+          const url = URL.createObjectURL(blob);
+          const a = document.createElement('a');
+          a.style.display = 'none';
+          a.download = fileName;
+          a.href = url;
+          document.body.appendChild(a);
+          a.click();
+          setTimeout(() => {
+            if (a.parentNode) document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+          }, 2000);
+        }, 'image/png', 0.98);
+        return;
       }
-
-      const form = document.createElement('form');
-      form.method = 'POST';
-      form.action = '/api/download-image';
-      form.target = 'rifa_download_iframe';
-      form.style.display = 'none';
-
-      const fileInput = document.createElement('input');
-      fileInput.type = 'hidden';
-      fileInput.name = 'fileName';
-      fileInput.value = fileName;
-      form.appendChild(fileInput);
-
-      const dataInput = document.createElement('input');
-      dataInput.type = 'hidden';
-      dataInput.name = 'imageBase64';
-      dataInput.value = dataUrl;
-      form.appendChild(dataInput);
-
-      document.body.appendChild(form);
-      form.submit();
-
-      setTimeout(() => {
-        if (form.parentNode) form.parentNode.removeChild(form);
-      }, 3000);
-      return;
-    } catch (serverErr) {
-      console.warn('Descarga por endpoint falló, recurriendo a File/Blob:', serverErr);
+    } catch (blobErr) {
+      console.warn('Descarga por Blob falló, recurriendo a DataURL:', blobErr);
     }
 
-    // 2. Fallback offline: File object con nombre explícito
+    // 2. Fallback universal directo con DataURL
+    this.fallbackDownloadDataUrl(canvas, fileName);
+  }
+
+  fallbackDownloadDataUrl(canvas, fileName) {
     try {
-      const blob = await this.getCanvasBlob(canvas);
-      const file = new File([blob], fileName, { type: 'image/png' });
-      const url = URL.createObjectURL(file);
+      const dataUrl = canvas.toDataURL('image/png', 0.98);
       const a = document.createElement('a');
+      a.style.display = 'none';
       a.download = fileName;
-      a.href = url;
+      a.href = dataUrl;
       document.body.appendChild(a);
       a.click();
       setTimeout(() => {
         if (a.parentNode) document.body.removeChild(a);
-        URL.revokeObjectURL(url);
-      }, 60000);
-    } catch (blobErr) {
-      console.error('Error total al descargar imagen:', blobErr);
+      }, 2000);
+    } catch (err) {
+      console.error('Error total al descargar imagen:', err);
     }
   }
 
